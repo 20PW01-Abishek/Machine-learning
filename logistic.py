@@ -93,3 +93,38 @@ print("recall for p/TPR: ",TP/(TP+FN))
 print("recall for n/TNR: ",TN/(FP+TN))
 print("FPR: ",FP/N)
 print("FNR: ",FN/P)
+
+
+def sigmoid(Z):
+    Z = np.array(Z, dtype='float64')
+    return 1/(1 + np.exp(-Z))
+
+def logisticRegression(X, Y, learningRate, iterations):
+    X = np.vstack((np.ones((X.shape[0],)), X.T)).T
+    print(X)
+    wT=np.zeros((X.shape[1], 1)).T
+    costs = []
+    for i in range(iterations):
+        wTx = np.dot(wT, X.T)
+        A = sigmoid(wTx)
+        wPred = np.array([1 if x >= 0.5 else 0 for x in A[0]])
+        costs.append(np.sum(np.square(wPred - Y)))
+        dW = np.dot(X.T, (wPred - Y)) / (Y.size) 
+        wT = wT - learningRate * dW
+    return wT, np.array(costs)
+
+W, costs = logisticRegression(X_train, Y_train, 0.000001,10000)
+print(W)
+
+def predict(X, Y, W):
+    X = np.vstack((np.ones((X.shape[0],)), X.T)).T
+    wTx = np.dot(W, X.T)
+    A = sigmoid(wTx)
+    wPred = np.array([1 if x >= 0.5 else 0 for x in A[0]])
+    print("Accuracy: ", np.sum(wPred == Y)/Y.size)
+    print("Precision for 0: ", np.sum(wPred == 0)/np.sum(Y == 0))
+    print("Precision for 1: ", np.sum(wPred == 1)/np.sum(Y == 1))
+    wPred = ['Malignant' if i==0 else 'Benign' for i in wPred]
+    return wPred
+dP = predict(X_test, Y_test, W)
+print(dP) 
