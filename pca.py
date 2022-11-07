@@ -1,22 +1,24 @@
+from sklearn import datasets
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.datasets import load_breast_cancer
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
-
-
-dataset=load_breast_cancer()
-df=pd.DataFrame(dataset['data'],columns=dataset['feature_names'])
-print(df.head())
-scaled_data = StandardScaler().fit_transform(df)
-print(scaled_data)
-
-pca=PCA(n_components=2)
-pca.fit(scaled_data)
-x_pca=pca.transform(scaled_data)
-print(scaled_data.shape)
-print(x_pca.shape)
-plt.figure(figsize=(10,10))
-plt.scatter(x_pca[:,0],x_pca[:,1],c=dataset['target'])
-plt.show()
-
+import numpy as np
+from matplotlib import pyplot as plt
+import seaborn as sns
+dataset = datasets.load_iris()
+X = df = pd.DataFrame(dataset['data'],columns=dataset['feature_names'])
+def PCA(X,k):
+    df = X.copy()
+    df = df-df.mean()
+    cv = list(df.cov().values)
+    w, v = np.linalg.eig(cv)
+    ind = np.argsort(w)[::-1]
+    w = w[ind]
+    v = v[:,ind]
+    
+    W = v[:k].T
+    Z = X.dot(W)
+    Z.columns = [str(i) for i in range(1,k+1)]
+    return Z
+y=dataset.target
+print(PCA(X,2))
+print(dataset.target)
+print(X)
